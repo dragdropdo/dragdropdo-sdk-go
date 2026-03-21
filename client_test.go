@@ -44,7 +44,7 @@ func TestClient_UploadFile_MultipartFlow(t *testing.T) {
 
 	// Mock server for API requests
 	apiServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/v1/external/upload" {
+		if r.URL.Path == "/api/v1/initiate-upload" {
 			// Presigned URL request
 			var body map[string]interface{}
 			if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -61,7 +61,7 @@ func TestClient_UploadFile_MultipartFlow(t *testing.T) {
 			}
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(response)
-		} else if r.URL.Path == "/v1/external/complete-upload" {
+		} else if r.URL.Path == "/api/v1/complete-upload" {
 			// Complete upload request
 			var body map[string]interface{}
 			if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -121,7 +121,7 @@ func TestClient_CreateOperation_AndPollStatus(t *testing.T) {
 	callCount := 0
 	// Mock server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if strings.HasPrefix(r.URL.Path, "/v1/external/do") {
+		if strings.HasPrefix(r.URL.Path, "/api/v1/do") {
 			// Create operation
 			if r.Method != "POST" {
 				t.Errorf("Expected POST, got %s", r.Method)
@@ -145,7 +145,7 @@ func TestClient_CreateOperation_AndPollStatus(t *testing.T) {
 			}
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(response)
-		} else if strings.HasPrefix(r.URL.Path, "/v1/external/status/") {
+		} else if strings.HasPrefix(r.URL.Path, "/api/v1/status/") {
 			// Get status
 			if r.Method != "GET" {
 				t.Errorf("Expected GET, got %s", r.Method)
@@ -253,7 +253,7 @@ func TestClient_NewDragdropdo_Validation(t *testing.T) {
 
 func TestClient_CheckSupportedOperation(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != "POST" || r.URL.Path != "/v1/external/supported-operation" {
+		if r.Method != "POST" || r.URL.Path != "/api/v1/supported-operation" {
 			t.Errorf("Unexpected request: %s %s", r.Method, r.URL.Path)
 			return
 		}

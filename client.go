@@ -221,7 +221,7 @@ func (c *Dragdropdo) UploadFile(options UploadFileOptions) (*UploadResponse, err
 			"parts":     calculatedParts,
 		}).
 		SetResult(&uploadResp).
-		Post("/v1/biz/initiate-upload")
+		Post("/api/v1/initiate-upload")
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to request presigned URLs: %w", err)
@@ -329,7 +329,7 @@ func (c *Dragdropdo) UploadFile(options UploadFileOptions) (*UploadResponse, err
 			"parts":     uploadParts,
 		}).
 		SetResult(&completeResp).
-		Post("/v1/biz/complete-upload")
+		Post("/api/v1/complete-upload")
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to complete upload: %w", err)
@@ -370,7 +370,7 @@ func (c *Dragdropdo) CheckSupportedOperation(options SupportedOperationOptions) 
 	_, err := c.httpClient.R().
 		SetBody(body).
 		SetResult(&resp).
-		Post("/v1/biz/supported-operation")
+		Post("/api/v1/supported-operation")
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to check supported operation: %w", err)
@@ -408,7 +408,7 @@ func (c *Dragdropdo) CreateOperation(options OperationOptions) (*OperationRespon
 	_, err := c.httpClient.R().
 		SetBody(body).
 		SetResult(&resp).
-		Post("/v1/biz/do")
+		Post("/api/v1/do")
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to create operation: %w", err)
@@ -521,7 +521,7 @@ func (c *Dragdropdo) GetStatus(options StatusOptions) (*StatusResponse, error) {
 		return nil, errors.New("main_task_id is required")
 	}
 
-	url := fmt.Sprintf("/v1/biz/status/%s", options.MainTaskID)
+	url := fmt.Sprintf("/api/v1/status/%s", options.MainTaskID)
 	if options.FileTaskID != "" {
 		url += fmt.Sprintf("/%s", options.FileTaskID)
 	}
@@ -559,11 +559,16 @@ func (c *Dragdropdo) GetStatus(options StatusOptions) (*StatusResponse, error) {
 		}
 	}
 
+	normalizedStatus := strings.ToLower(resp.Data.OperationStatus)
+	for i := range filesData {
+		filesData[i].Status = strings.ToLower(filesData[i].Status)
+	}
+
 	return &StatusResponse{
-		OperationStatus:     resp.Data.OperationStatus,
-		FilesData:           filesData,
-		OperationStatusAlias: resp.Data.OperationStatus,
-		FilesDataAlias:      filesData,
+		OperationStatus:      normalizedStatus,
+		FilesData:            filesData,
+		OperationStatusAlias: normalizedStatus,
+		FilesDataAlias:       filesData,
 	}, nil
 }
 
