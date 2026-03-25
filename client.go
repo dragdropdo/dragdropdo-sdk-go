@@ -97,7 +97,7 @@ type OperationResponse struct {
 // StatusOptions represents options for getting status
 type StatusOptions struct {
 	MainTaskID string
-	FileTaskID string
+	FileKey    string
 }
 
 // FileTaskStatus represents status of a file task
@@ -469,15 +469,6 @@ func (c *Dragdropdo) Zip(fileKeys []string, notes map[string]string) (*Operation
 	})
 }
 
-// Share shares files (generates shareable links)
-func (c *Dragdropdo) Share(fileKeys []string, notes map[string]string) (*OperationResponse, error) {
-	return c.CreateOperation(OperationOptions{
-		Action:   "share",
-		FileKeys: fileKeys,
-		Notes:    notes,
-	})
-}
-
 // LockPdf locks PDF with password
 func (c *Dragdropdo) LockPdf(fileKeys []string, password string, notes map[string]string) (*OperationResponse, error) {
 	return c.CreateOperation(OperationOptions{
@@ -522,8 +513,8 @@ func (c *Dragdropdo) GetStatus(options StatusOptions) (*StatusResponse, error) {
 	}
 
 	url := fmt.Sprintf("/api/v1/status/%s", options.MainTaskID)
-	if options.FileTaskID != "" {
-		url += fmt.Sprintf("/%s", options.FileTaskID)
+	if options.FileKey != "" {
+		url += fmt.Sprintf("/%s", options.FileKey)
 	}
 
 	var resp struct {

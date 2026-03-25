@@ -196,7 +196,7 @@ Create a file operation (convert, compress, merge, zip, etc.).
 
 **Parameters:**
 
-- `Action` (required) - Action to perform: `"convert"`, `"compress"`, `"merge"`, `"zip"`, `"share"`, `"lock"`, `"unlock"`, `"reset_password"`
+- `Action` (required) - Action to perform: `"convert"`, `"compress"`, `"merge"`, `"zip"`, `"lock"`, `"unlock"`, `"reset_password"`
 - `FileKeys` (required) - Array of file keys from upload
 - `Parameters` (optional) - Action-specific parameters
 - `Notes` (optional) - User metadata
@@ -251,13 +251,6 @@ client.Zip(fileKeys, notes)
 // Example: client.Zip([]string{"file-key-1", "file-key-2"}, nil)
 ```
 
-**Share:**
-
-```go
-client.Share(fileKeys, notes)
-// Example: client.Share([]string{"file-key-123"}, nil)
-```
-
 **Lock PDF:**
 
 ```go
@@ -290,7 +283,7 @@ Get the current status of an operation.
 **Parameters:**
 
 - `MainTaskID` (required) - Main task ID from operation creation
-- `FileTaskID` (optional) - Specific file task ID
+- `FileKey` (optional) - Input file key for specific file status
 
 **Returns:** `*StatusResponse` with operation and file statuses
 
@@ -302,10 +295,10 @@ status, err := client.GetStatus(d3.StatusOptions{
     MainTaskID: "task-123",
 })
 
-// Get specific file task status
+// Get specific file status by file key
 status, err := client.GetStatus(d3.StatusOptions{
     MainTaskID: "task-123",
-    FileTaskID: "file-task-456",
+    FileKey:    "file-key-456",
 })
 
 fmt.Printf("Operation status: %s\n", status.OperationStatus)
@@ -318,7 +311,7 @@ Poll operation status until completion or failure.
 
 **Parameters:**
 
-- `StatusOptions` (required) - Status options with `MainTaskID` and optional `FileTaskID`
+- `StatusOptions` (required) - Status options with `MainTaskID` and optional `FileKey`
 - `Interval` (optional) - Polling interval (default: `2 * time.Second`)
 - `Timeout` (optional) - Maximum polling duration (default: `5 * time.Minute`)
 - `OnUpdate` (optional) - Callback for each status update
